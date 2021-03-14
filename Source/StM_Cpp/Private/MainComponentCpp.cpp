@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GameFramework/Character.h"
 #include "MainComponentCpp.h"
+#include "GameFramework/Character.h"
+
 
 // Sets default values for this component's properties
 UMainComponentCpp::UMainComponentCpp()
