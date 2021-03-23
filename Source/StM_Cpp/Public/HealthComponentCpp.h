@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "MainComponentCpp.h"
 #include "HealthComponentCpp.generated.h"
-
 /**
  * 
  */
@@ -24,7 +23,7 @@ public:
 	UFUNCTION()
 		void OnRep_CurrentHP();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(Client, Unreliable)
 		void CurrentHP_Update();
 
 	UFUNCTION(BlueprintImplementableEvent)
@@ -34,10 +33,13 @@ public:
 		bool bIsDead;
 
 	UPROPERTY(BlueprintReadOnly)
-		TArray<AController*> DamageCausers;
+		TArray<AController*> InstigatedByArray;
 
 	UPROPERTY(BlueprintReadOnly)
 		AController* LastDamageController;
+
+	UPROPERTY(EditDefaultsOnly)
+		UParticleSystem* EmitterTamplate;
 
 	virtual void BeginPlay() override;
 
@@ -45,7 +47,7 @@ public:
 		void SetMaxHP();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-		void GetDamage(float Damage, AController* Causer);
+		void GetDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 		void Dead();
@@ -53,6 +55,5 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 		void NewRound();
 
-	UFUNCTION(BlueprintImplementableEvent)
-		void DeadBP();
+
 };

@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Net\UnrealNetwork.h"
+#include "StM_Cpp/Gameplay/Characters/GameplayCharacterCpp.h"
+
 #include "MainComponentCpp.generated.h"
 
 
@@ -17,8 +19,8 @@ public:
 	// Sets default values for this component's properties
 	UMainComponentCpp();
 
-	UPROPERTY(BlueprintReadWrite)
-		ACharacter* OwnerRef;
+	UPROPERTY(BlueprintReadWrite, Replicated)
+		AGameplayCharacterCpp* OwnerRef;
 
 protected:
 	// Called when the game starts

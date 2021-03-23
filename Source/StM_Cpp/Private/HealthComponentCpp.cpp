@@ -20,6 +20,11 @@ void UHealthComponentCpp::OnRep_CurrentHP()
 
 }
 
+void UHealthComponentCpp::CurrentHP_Update_Implementation()
+{
+	OwnerRef->NeedUpdateWidgetHealth();
+}
+
 void UHealthComponentCpp::BeginPlay()
 {
 	UMainComponentCpp::BeginPlay();
@@ -27,27 +32,15 @@ void UHealthComponentCpp::BeginPlay()
 	{
 		SetMaxHP();
 	}
+	OwnerRef->OnTakeAnyDamage.AddDynamic(this, &UHealthComponentCpp::GetDamage);
 }
 
-void UHealthComponentCpp::NewRound_Implementation()
-{
-	SetMaxHP();
-	DamageCausers.Empty();
-	LastDamageController = NULL;
-}
 
-void UHealthComponentCpp::Dead_Implementation()
+void UHealthComponentCpp::GetDamage_Implementation(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	bIsDead = true;
-	DeadBP();
-
-}
-
-void UHealthComponentCpp::GetDamage_Implementation(float Damage, AController* Causer)
-{
-	DamageCausers.AddUnique(Causer);
-	LastDamageController = Causer;
-	if (CurrentHP < Damage)
+	InstigatedByArray.AddUnique(InstigatedBy);
+	LastDamageController = InstigatedBy;
+	if (CurrentHP <= Damage)
 	{
 		CurrentHP = 0;
 		Dead();
@@ -56,8 +49,26 @@ void UHealthComponentCpp::GetDamage_Implementation(float Damage, AController* Ca
 	{
 		CurrentHP = CurrentHP - Damage;
 	}
-	UpdateWidgetServer();
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Damage: x: %f"), Damage));
+	CurrentHP_Update();
+	
 }
+
+void UHealthComponentCpp::NewRound_Implementation()
+{
+	SetMaxHP();
+	InstigatedByArray.Empty();
+	LastDamageController = NULL;
+}
+
+void UHealthComponentCpp::Dead_Implementation()
+{
+	bIsDead = true;
+	OwnerRef->bIsDead = true;
+	OwnerRef->CharacterDead();
+
+}
+
 
 
 void UHealthComponentCpp::SetMaxHP_Implementation()
