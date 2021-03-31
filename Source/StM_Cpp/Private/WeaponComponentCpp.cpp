@@ -7,6 +7,7 @@
 #include "StM_Cpp/Gameplay/ST_WEaponSocket.h"
 #include "StM_Cpp/Gameplay/ST_WeaponStats.h"
 #include "StM_Cpp/Gameplay/EWeaponTypeCpp.h"
+#include "Camera/CameraComponent.h"
 
 
 void UWeaponComponentCpp::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -202,6 +203,11 @@ void UWeaponComponentCpp::DropWeapon_Implementation(EWeaponTypeC WeaponType)
 
 		SaveWeaponToSlot(CurrentWeapon);
 		SaveStatsInWeapon(DroppedWeapon);
+		
+		FVector CharacterVelocity = OwnerRef->GetVelocity();
+		FVector CameraForwardVector = OwnerRef->GetFollowCamera()->GetForwardVector();
+		DroppedWeapon->CapsuleCollision->SetPhysicsLinearVelocity(CharacterVelocity + CameraForwardVector * 500);
+		DroppedWeapon->Dropped();
 
 		if (WeaponType == CurrentWeapon->WeaponType)
 		{

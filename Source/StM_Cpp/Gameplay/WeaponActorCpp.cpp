@@ -4,6 +4,7 @@
 #include "WeaponActorCpp.h"
 
 #include "WeaponComponentCpp.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "StM_Cpp/Gameplay/Characters/GameplayCharacterCpp.h"
 
 // Sets default values
@@ -24,6 +25,7 @@ AWeaponActorCpp::AWeaponActorCpp()
 	RootComponent = Scene;
 	
 	CapsuleCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeaponActorCpp::OnOverlapBegin);
+	CapsuleCollision->SetSimulatePhysics(true);
 	
 }
 
@@ -66,6 +68,42 @@ void AWeaponActorCpp::NeedUpdateWidget()
 	{
 		CurrentPlayer->NeedUpdateWidgetAmmo();
 	}
+}
+
+void AWeaponActorCpp::Dropped_Implementation()
+{
+	GetWorldTimerManager().SetTimer(SynchMoveTimer, this, &AWeaponActorCpp::PhysicsTick, 0.2, true, -1);
+}
+
+void AWeaponActorCpp::PhysicsTick()
+{
+	FVector SyncVelocity = CapsuleCollision->GetPhysicsLinearVelocity();
+	FTransform SyncTransform = CapsuleCollision->GetComponentTransform();
+	
+	SynchronizeMove(SyncTransform, SyncVelocity);
+
+	if (UKismetMathLibrary::EqualEqual_VectorVector(SyncTransform.GetLocation(), OldPosotion, 0.1))
+	{
+		GetWorldTimerManager().ClearTimer(SynchMoveTimer);
+		DisablePhysics();
+
+	}
+	else
+	{
+		OldPosotion = CapsuleCollision->GetComponentLocation();
+	}
+}
+
+void AWeaponActorCpp::SynchronizeMove_Implementation(FTransform Transform, FVector Velocity)
+{
+	CapsuleCollision->SetWorldTransform(Transform);
+	CapsuleCollision->SetPhysicsLinearVelocity(Velocity);
+}
+
+void AWeaponActorCpp::DisablePhysics_Implementation()
+{
+	CapsuleCollision->SetSimulatePhysics(false);
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Stop Sync"));
 }
 
 // Called when the game starts or when spawned

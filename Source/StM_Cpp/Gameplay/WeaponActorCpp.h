@@ -54,6 +54,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		float Damage;
+
+	UPROPERTY()
+		FTimerHandle SynchMoveTimer;
+
+	UPROPERTY()
+		FVector OldPosotion;
 	
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -66,7 +72,18 @@ public:
 
 	UFUNCTION()
 		void NeedUpdateWidget();
-	
+
+	UFUNCTION(Server, Reliable)
+		void Dropped();
+
+	UFUNCTION()
+		void PhysicsTick();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void SynchronizeMove(FTransform Transform, FVector Velocity);
+
+	UFUNCTION(NetMulticast, UnReliable)
+		void DisablePhysics();
 
 
 protected:
