@@ -44,6 +44,7 @@ void UHealthComponentCpp::GetDamage_Implementation(AActor* DamagedActor, float D
 	{
 		CurrentHP = 0;
 		Dead();
+		return;
 	}
 	else
 	{

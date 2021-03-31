@@ -21,7 +21,7 @@ public:
 
 	AFireActorCpp();
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		UStaticMeshComponent* BulletStart;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -81,6 +81,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 		void SpawnBulletMulticast(FTransform Transform);
+
+	
 
 
 

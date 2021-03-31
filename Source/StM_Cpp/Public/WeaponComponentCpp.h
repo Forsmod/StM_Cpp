@@ -92,6 +92,9 @@ public:
 	UFUNCTION(BlueprintCallable, Client, Unreliable)
 		void NeedUpdateWidget();
 
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+		void NewRound();
+
 
 	
 };

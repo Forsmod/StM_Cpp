@@ -84,6 +84,24 @@ void UWeaponComponentCpp::SaveStatsInWeapon(AWeaponActorCpp* DroppedWeapon)
 	}
 }
 
+void UWeaponComponentCpp::NewRound_Implementation()
+{
+	for (int i = 0; i < 6; i++)
+	{
+		if(IsValid(PlayerWeaponsArray[i].Weapon))
+		{
+			PlayerWeaponsArray[i].WeaponInfo.CurrentAmmo = PlayerWeaponsArray[i].WeaponInfo.MaxAmmoInClip;
+		}
+	}
+
+	if (IsValid(CurrentWeapon))
+	{
+		SaveStatsInWeapon(CurrentWeapon);
+		NeedUpdateWidget();
+	}
+		
+}
+
 
 void UWeaponComponentCpp::EndFireServer_Implementation()
 {

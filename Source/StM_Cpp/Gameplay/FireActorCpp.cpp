@@ -45,7 +45,7 @@ void AFireActorCpp::SpawnBulletMulticast_Implementation(FTransform Transform)
 	SpawnParameters.Instigator = CurrentPlayer;
 	SpawnParameters.Owner = this;
 	
-	AMainBulletCpp *Bullet = GetWorld()->SpawnActor<AMainBulletCpp>(BulletClass, Transform.GetLocation(), Transform.Rotator(), SpawnParameters);
+	AMainBulletCpp *Bullet = GetWorld()->SpawnActor<AMainBulletCpp>(BulletClass, BulletStartLocation, Transform.Rotator(), SpawnParameters);
 	Bullet->Damage = Damage;
 }
 
@@ -60,7 +60,7 @@ void AFireActorCpp::EndFire()
 
 void AFireActorCpp::Loop()
 {
-	if(SetFire)
+	if(SetFire & (IsReload == false))
 	{
 		GetWorldTimerManager().SetTimer(LoopFireHandle, this, &AFireActorCpp::TryShoot, AttackSpeed, AutomaticFire, 0);
 	}
@@ -86,7 +86,7 @@ void AFireActorCpp::TryShoot()
 		FHitResult Hit;
 
 		FCollisionQueryParams MyParams;
-
+		
 		if (GetWorld()->LineTraceSingleByChannel(Hit, CameraLocation, EndLocation, ECC_Visibility, MyParams, FCollisionResponseParams::DefaultResponseParam))
 		{
 			SpawnBulletMulticast(FindBulletTransform(Hit.ImpactPoint));
@@ -116,6 +116,7 @@ void AFireActorCpp::EndReload()
 {
 	IsReload = false;
 	WeaponStats.CurrentAmmo = WeaponStats.MaxAmmoInClip;
+	NeedUpdateWidget();
 }
 
 FTransform AFireActorCpp::FindBulletTransform(FVector Target)

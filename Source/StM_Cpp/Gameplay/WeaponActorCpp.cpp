@@ -24,7 +24,6 @@ AWeaponActorCpp::AWeaponActorCpp()
 	RootComponent = Scene;
 	
 	CapsuleCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeaponActorCpp::OnOverlapBegin);
-
 	
 }
 
